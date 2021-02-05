@@ -4,30 +4,89 @@
 
 // Displays selectable tabs above the editor.
 // Overrides: atom/tabs
+@import "ui-variables";
+
+@vertical-center: @tab-height - @tab-indicator-size;
 
 .tab-bar {
   background-color: @tab-bar-background-color;
   border-bottom: 1px solid @base-border-color;
+  padding-left: 1px;
+  padding-bottom: 0px;
+  filter: blur(0px);
+  
 
+&.tab.is-dragging {
+  filter: blur(1px);
+  }
+  
   .tab {
     color: @text-color;
     height: @tab-height;
-    line-height: @tab-height;
+    line-height: @vertical-center;
     font-size: @font-size;
-    border-right: 1px solid @tab-border-color;
+    margin-right: 1px;
+    vertical-align: text-top;
+    --border-grad-start: @central-outline-color;
+    --border-grad-end: @tab-indicator-color;
+    --tabbg-color: @tab-background-color;
+    --tabshadow-color: darken(@tab-background-color, 5%);
+    box-shadow: 0 0 10px darken(@tab-background-color, 10%);
+    z-index: 5;
+
+    background: 
+      linear-gradient(0deg, var(--tabshadow-color), var(--tabbg-color)20%) padding-box,
+      radial-gradient(var(--border-grad-end), transparent, transparent, var(--border-grad-end)) border-box, no-repeat;
+    background-size: 150% 100%;
+    border-bottom: @tab-indicator-size/2 solid transparent;
+    animation: gradient2 0.5s ease;
+    animation-fill-mode: forwards;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+
     background-color: @tab-background-color;
+    transition: border-bottom 0.3s;
+    
+    @keyframes gradient2 {
+    	0% {
+    		background-position: 200% 60%;
+    	}
+    	100% {
+    		background-position: 50% 60%;
+    	}
+    }
+    
     &.active {
+      border-bottom: @tab-indicator-size solid transparent;
+      z-index: 10;
+      animation: gradient 0.5s ease;
+      animation-iteration-count: 1;
+      animation-fill-mode: forwards;
       color: @text-color-selected;
+      --tabshadow-color: darken(@tab-background-color-active, 7%);
+      --tabbg-color: @tab-background-color-active;
+      background-size: 150% 100%;
       background-color: @tab-background-color-active;
     }
+    @keyframes gradient {
+    	0% {
+    		background-position: 0% 60%;
+    	}
+    	100% {
+    		background-position: 200% 60%;
+    	}
+    }
+    
+  &.inactive {
 
+  }
 
     // Modified Icon (the circle) -------------------
     &.modified:not(:hover) .close-icon {
       top: 50%;
       right: @component-padding + 4px; // 4px -> half of icon size
       margin-top: -3px;
-      border-color: @text-color-info;
+      border-color: @central-color;
     }
     &.modified:hover .close-icon {
       color: currentColor;
@@ -46,9 +105,7 @@
     // Dragging -------------------
     // Styles get applied while dragging a tab
     &.is-dragging {
-      background: darken(@tab-background-color, 10%);
-      border-color: transparent;
-      opacity: .5;
+      filter: blur(1px);
       & .close-icon {
         visibility: hidden;
       }
